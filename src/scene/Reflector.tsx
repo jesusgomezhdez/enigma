@@ -6,6 +6,7 @@ import { Vector3, type Group } from 'three'
 import type { ReflectorId } from '../engine'
 import { useEnigma } from '../state/enigmaStore'
 import { labelTexture } from './labelTexture'
+import { isClick } from './isClick'
 import { boxSlotX, END_WHEEL, REFLECTOR_BOX, ROTOR, ROTOR_HOUSING_CENTER_Z, rotorX } from './layout'
 import { materials } from './materials'
 
@@ -46,7 +47,7 @@ export function Reflector({ id, home, homeCount }: ReflectorProps) {
     <group
       ref={travel}
       onClick={(event) => {
-        event.stopPropagation()
+        if (!isClick(event)) return
         const { removeReflector, installReflector } = useEnigma.getState()
         if (installed) removeReflector()
         else installReflector(id)

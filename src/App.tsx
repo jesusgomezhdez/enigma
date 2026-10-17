@@ -1,3 +1,4 @@
+import { useMachineSounds } from './audio/useMachineSounds'
 import { usePhysicalKeyboard } from './hooks/usePhysicalKeyboard'
 import { EnigmaScene } from './scene/EnigmaScene'
 import { Tape } from './ui/Tape'
@@ -5,6 +6,7 @@ import { Toolbar } from './ui/Toolbar'
 
 function App() {
   usePhysicalKeyboard()
+  useMachineSounds()
 
   return (
     <main className="app">

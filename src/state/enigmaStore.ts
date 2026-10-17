@@ -63,6 +63,16 @@ export function assembleMachine(parts: MachineParts): MachineState | null {
   }
 }
 
+const SOUND_PREFERENCE_KEY = 'enigma:sound'
+
+function readSoundPreference(): boolean {
+  try {
+    return localStorage.getItem(SOUND_PREFERENCE_KEY) !== 'off'
+  } catch {
+    return true
+  }
+}
+
 function freshRotors(model: ModelId): Record<RotorName, RotorPiece> {
   return Object.fromEntries(rotorsOf(model).map((id) => [id, { ring: 0, position: 0 }])) as Record<RotorName, RotorPiece>
 }
@@ -79,8 +89,11 @@ interface EnigmaStore extends MachineParts {
   hoveredRotor: RotorName | null
   /** Socket holding the far end of the cable being dragged. */
   cableDrag: Letter | null
+  /** The wooden lid of the transport case. Closed, nothing on the machine can be reached. */
+  caseOpen: boolean
   flapOpen: boolean
   innerLidOpen: boolean
+  soundOn: boolean
   view: ViewId
   /** Bumped on every view request so picking the same view again re-centres the camera. */
   viewRequest: number
@@ -107,6 +120,9 @@ interface EnigmaStore extends MachineParts {
   dropCable: (target: Letter | null) => void
   setFlapOpen: (open: boolean) => void
   setInnerLidOpen: (open: boolean) => void
+  /** Closing the case folds the front flap and the inner lid first, as they would not fit otherwise. */
+  setCaseOpen: (open: boolean) => void
+  setSoundOn: (on: boolean) => void
   setView: (view: ViewId) => void
 }
 
@@ -124,14 +140,16 @@ export const useEnigma = create<EnigmaStore>()((set, get) => ({
   grabbedRotor: null,
   hoveredRotor: null,
   cableDrag: null,
+  caseOpen: true,
   flapOpen: false,
   innerLidOpen: false,
+  soundOn: readSoundPreference(),
   view: 'machine',
   viewRequest: 0,
 
   pressKey: (key, source) => {
     const state = get()
-    if (state.pressedKey !== null) return
+    if (state.pressedKey !== null || !state.caseOpen) return
     const machine = assembleMachine(state)
     if (machine === null) {
       // The key still goes down, but with a slot empty the circuit is open: no stepping, no lamp.
@@ -227,11 +245,28 @@ export const useEnigma = create<EnigmaStore>()((set, get) => ({
     set({ plugboard: isFree ? [...plugboard, cableDrag + target] : plugboard, cableDrag: null })
   },
 
-  setFlapOpen: (open) => set({ flapOpen: open }),
+  setFlapOpen: (open) => {
+    if (get().caseOpen) set({ flapOpen: open })
+  },
 
   setInnerLidOpen: (open) => {
-    if (get().pressedKey !== null) return
+    if (get().pressedKey !== null || !get().caseOpen) return
     set({ innerLidOpen: open })
+  },
+
+  setCaseOpen: (open) => {
+    const { pressedKey, cableDrag, grabbedRotor } = get()
+    if (pressedKey !== null || cableDrag !== null || grabbedRotor !== null) return
+    set(open ? { caseOpen: true } : { caseOpen: false, flapOpen: false, innerLidOpen: false })
+  },
+
+  setSoundOn: (on) => {
+    try {
+      localStorage.setItem(SOUND_PREFERENCE_KEY, on ? 'on' : 'off')
+    } catch {
+      // Storage unavailable (private mode): the choice just won't be remembered.
+    }
+    set({ soundOn: on })
   },
 
   setView: (view) =>
@@ -239,6 +274,7 @@ export const useEnigma = create<EnigmaStore>()((set, get) => ({
       view,
       viewRequest: state.viewRequest + 1,
       // Each view uncovers what it is there to show.
+      caseOpen: true,
       flapOpen: view === 'plugboard' ? true : state.flapOpen,
       innerLidOpen: view === 'interior' ? true : state.innerLidOpen,
     })),

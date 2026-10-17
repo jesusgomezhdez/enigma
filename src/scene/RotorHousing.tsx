@@ -5,6 +5,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { Group } from 'three'
 import { MODELS } from '../engine'
 import { rotorsOf, useEnigma } from '../state/enigmaStore'
+import { isClick } from './isClick'
 import { END_WHEEL, PLATE_Y, ROTOR, ROTOR_HOUSING, ROTOR_HOUSING_CENTER_Z, rotorX } from './layout'
 import { materials } from './materials'
 import { plateWithHoles, type Hole } from './plate'
@@ -51,7 +52,7 @@ function InnerLid({ count }: { count: number }) {
         material={materials.nickel}
         position={[0, lidThickness + 0.15, DEPTH - 0.35]}
         onClick={(event) => {
-          event.stopPropagation()
+          if (!isClick(event)) return
           setInnerLidOpen(!isOpen)
         }}
         onPointerOver={(event) => {

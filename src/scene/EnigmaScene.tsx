@@ -32,9 +32,10 @@ function Studio() {
   return (
     <>
       <color attach="background" args={['#14110e']} />
-      <ambientLight intensity={0.15} />
+      <hemisphereLight args={['#fff1dc', '#2a1d14', 0.35]} />
       <directionalLight
         position={[18, 45, 25]}
+        color="#fff4e2"
         intensity={1.6}
         castShadow
         shadow-mapSize={[2048, 2048]}

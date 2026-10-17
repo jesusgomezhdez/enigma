@@ -17,6 +17,10 @@ export function Toolbar() {
   const rotors = useEnigma((s) => s.rotors)
   const reflector = useEnigma((s) => s.reflector)
   const plugboard = useEnigma((s) => s.plugboard)
+  const caseOpen = useEnigma((s) => s.caseOpen)
+  const setCaseOpen = useEnigma((s) => s.setCaseOpen)
+  const soundOn = useEnigma((s) => s.soundOn)
+  const setSoundOn = useEnigma((s) => s.setSoundOn)
 
   const ringStyle = MODELS[model].ringLabels
   const isComplete = reflector !== null && slots.every((slot) => slot !== null)
@@ -32,6 +36,14 @@ export function Toolbar() {
           </button>
         ))}
       </div>
+      <div className="views" role="group">
+        <button type="button" onClick={() => setCaseOpen(!caseOpen)}>
+          {caseOpen ? 'Cerrar caja' : 'Abrir caja'}
+        </button>
+        <button type="button" aria-pressed={soundOn} onClick={() => setSoundOn(!soundOn)}>
+          Sonido {soundOn ? 'sí' : 'no'}
+        </button>
+      </div>
       <dl className="setup">
         <dt>UKW</dt>
         <dd>{reflector?.replace('-thin', ' fina') ?? '—'}</dd>
@@ -44,7 +56,7 @@ export function Toolbar() {
         </dt>
         <dd>{plugboard.join(' ') || '—'}</dd>
       </dl>
-      {!isComplete && (
+      {caseOpen && !isComplete && (
         <p className="warning" role="status">
           Falta {reflector === null ? 'el reflector' : 'un rotor'}: el circuito está abierto.
         </p>

@@ -1,9 +1,10 @@
 import { MeshStandardMaterial } from 'three'
+import { OAK, OAK_DARK, woodTexture } from './woodTexture'
 
 /** Shared materials: one instance each, reused by every part. */
 export const materials = {
-  wood: new MeshStandardMaterial({ color: '#5b3920', roughness: 0.55 }),
-  woodDark: new MeshStandardMaterial({ color: '#3f2714', roughness: 0.6 }),
+  wood: new MeshStandardMaterial({ map: woodTexture(OAK), roughness: 0.55 }),
+  woodDark: new MeshStandardMaterial({ map: woodTexture(OAK_DARK, 3), roughness: 0.6 }),
   crinklePaint: new MeshStandardMaterial({ color: '#161616', roughness: 0.85, metalness: 0.15 }),
   bakelite: new MeshStandardMaterial({ color: '#0d0d0d', roughness: 0.35 }),
   ivory: new MeshStandardMaterial({ color: '#e7dfc9', roughness: 0.55 }),
