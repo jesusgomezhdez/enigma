@@ -58,16 +58,11 @@ export function woodTexture(palette: WoodPalette, seed = 7): CanvasTexture {
   return canvasTexture(canvas, true)
 }
 
-interface Inscription {
-  title: string
-  byline: string
-}
-
 /**
- * Colour and bump maps for the outside of the case lid, with the inscription carved into the wood.
+ * Colour and bump maps for the outside of the case lid, with a title carved into the wood.
  * `aspect` is width / depth of the lid, so the letters are not stretched.
  */
-export function carvedLidTextures({ title, byline }: Inscription, aspect: number) {
+export function carvedLidTextures(title: string, aspect: number) {
   const width = 2048
   const height = Math.round(width / aspect)
   const [colour, bump] = [document.createElement('canvas'), document.createElement('canvas')]
@@ -77,9 +72,7 @@ export function carvedLidTextures({ title, byline }: Inscription, aspect: number
   }
 
   const titleFont = `bold ${Math.round(height * 0.15)}px Georgia, "Times New Roman", serif`
-  const bylineFont = `italic ${Math.round(height * 0.065)}px Georgia, "Times New Roman", serif`
-  const titleY = height * 0.46
-  const bylineY = height * 0.64
+  const titleY = height * 0.5
   const frame = { x: width * 0.08, y: height * 0.12, w: width * 0.84, h: height * 0.76 }
 
   const carve = (context: CanvasRenderingContext2D, ink: string) => {
@@ -90,9 +83,6 @@ export function carvedLidTextures({ title, byline }: Inscription, aspect: number
     context.fillStyle = ink
     // maxWidth keeps the title inside the frame whatever font the system falls back to.
     context.fillText(title, width / 2, titleY, frame.w * 0.86)
-    context.font = bylineFont
-    context.letterSpacing = `${Math.round(width * 0.004)}px`
-    context.fillText(byline, width / 2, bylineY, frame.w * 0.86)
     context.strokeStyle = ink
     context.lineWidth = width * 0.004
     context.strokeRect(frame.x, frame.y, frame.w, frame.h)

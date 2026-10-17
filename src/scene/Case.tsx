@@ -9,7 +9,7 @@ import { CASE, FLAP, PLATE_Y, PLUGBOARD } from './layout'
 import { materials } from './materials'
 import { carvedLidTextures } from './woodTexture'
 
-const INSCRIPTION = { title: 'ENIGMA', byline: 'By Jesús Gómez' }
+const INSCRIPTION = 'ENIGMA'
 
 const LID_OPEN_ANGLE = -(100 * Math.PI) / 180
 const INNER = { width: CASE.width - 2 * CASE.wall, depth: CASE.depth - 2 * CASE.wall }
