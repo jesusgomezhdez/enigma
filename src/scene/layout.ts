@@ -14,6 +14,17 @@ export const KEYBOARD = { pitch: 3.1, rowsZ: [5, 8.1, 11.2], capRadius: 0.85, ca
 
 export const LAMPBOARD = { pitch: 2.9, rowsZ: [-5.6, -2.9, -0.2], windowRadius: 0.75, height: 0.7 }
 
+/**
+ * Steckerbrett on the front face of the machine, below the keyboard. The case's front flap
+ * folds down to reach it; cables live in the recess between the panel and the flap.
+ */
+export const PLUGBOARD = { z: 12.6, rowsY: [8.1, 5.6, 3.1], pitch: 3.1, socketRadius: 0.55, socketDepth: 0.15, plugLength: 0.6 }
+
+/** Front face of a plugged-in plug: where cables leave and where dragging happens. */
+export const PLUG_FRONT_Z = PLUGBOARD.z + PLUGBOARD.socketDepth + PLUGBOARD.plugLength
+
+export const FLAP = { openAngle: 1.62 }
+
 export const ROTOR_HOUSING = { width: 15, zFront: -7.4, zBack: -14, height: 1, wall: 0.2, lidThickness: 0.15, windowPitch: 3.6 }
 
 /**

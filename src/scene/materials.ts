@@ -9,5 +9,6 @@ export const materials = {
   ivory: new MeshStandardMaterial({ color: '#e7dfc9', roughness: 0.55 }),
   nickel: new MeshStandardMaterial({ color: '#b8b6b0', roughness: 0.28, metalness: 1 }),
   steel: new MeshStandardMaterial({ color: '#5e5e5c', roughness: 0.45, metalness: 0.9 }),
+  cable: new MeshStandardMaterial({ color: '#2a201a', roughness: 0.6 }),
   table: new MeshStandardMaterial({ color: '#2a1d14', roughness: 0.8 }),
 }

@@ -3,12 +3,14 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { Bloom, EffectComposer } from '@react-three/postprocessing'
 import { useEffect } from 'react'
 import { useEnigma } from '../state/enigmaStore'
+import { CameraRig } from './CameraRig'
 import { Case } from './Case'
 import { Keyboard } from './Keyboard'
 import { Lampboard } from './Lampboard'
-import { PLATE_Y } from './layout'
+import { Plugboard } from './Plugboard'
 import { materials } from './materials'
 import { RotorHousing } from './RotorHousing'
+import { VIEWS } from './views'
 
 /** Keeps the camera still while the hands are on the machine: a key held down or a thumbwheel. */
 function OrbitLock() {
@@ -17,7 +19,7 @@ function OrbitLock() {
     if (!controls) return
     // Subscribing outside React disables the controls in the same tick as the press.
     return useEnigma.subscribe((state) => {
-      controls.enabled = state.pressedBy !== 'pointer' && state.grabbedRotor === null
+      controls.enabled = state.pressedBy !== 'pointer' && state.grabbedRotor === null && state.cableDrag === null
       // The mouse wheel turns a thumbwheel instead of zooming while over it.
       controls.enableZoom = state.hoveredRotor === null
     })
@@ -57,25 +59,27 @@ function Studio() {
 
 export function EnigmaScene() {
   return (
-    <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: [0, 42, 34], fov: 35, near: 1, far: 600 }}>
+    <Canvas shadows="percentage" dpr={[1, 2]} camera={{ position: VIEWS.machine.position.toArray(), fov: 35, near: 1, far: 600 }}>
       <Studio />
       <group>
         <Case />
         <Keyboard />
         <Lampboard />
         <RotorHousing />
+        <Plugboard />
       </group>
       <OrbitControls
         makeDefault
-        target={[0, PLATE_Y, 0]}
+        target={VIEWS.machine.target.toArray()}
         enablePan={false}
         minDistance={25}
         maxDistance={110}
         minPolarAngle={0.1}
-        maxPolarAngle={1.05}
+        maxPolarAngle={1.42}
         enableDamping
       />
       <OrbitLock />
+      <CameraRig />
       <EffectComposer>
         <Bloom mipmapBlur luminanceThreshold={1} intensity={1.1} radius={0.6} />
       </EffectComposer>
