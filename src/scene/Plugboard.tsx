@@ -141,7 +141,7 @@ function Socket({ letter, x, y, isTarget, onGrab }: SocketProps) {
 
 /** Steckerbrett: the front panel with 26 sockets and the cables plugged into it. */
 export function Plugboard() {
-  const plugboard = useEnigma((s) => s.machine.plugboard)
+  const plugboard = useEnigma((s) => s.plugboard)
   const anchor = useEnigma((s) => s.cableDrag)
   const [target, setTarget] = useState<Letter | null>(null)
   const pointer = useRef(new Vector3())
@@ -172,10 +172,10 @@ export function Plugboard() {
     projectPointer(event.nativeEvent.clientX, event.nativeEvent.clientY)
     const onMove = (move: PointerEvent) => {
       projectPointer(move.clientX, move.clientY)
-      setTarget(freeSocketNear(pointer.current, useEnigma.getState().machine.plugboard, dragged))
+      setTarget(freeSocketNear(pointer.current, useEnigma.getState().plugboard, dragged))
     }
     const onUp = () => {
-      dropCable(freeSocketNear(pointer.current, useEnigma.getState().machine.plugboard, dragged))
+      dropCable(freeSocketNear(pointer.current, useEnigma.getState().plugboard, dragged))
       setTarget(null)
       stopDragging.current?.()
     }

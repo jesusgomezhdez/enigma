@@ -7,12 +7,13 @@ import { CameraRig } from './CameraRig'
 import { Case } from './Case'
 import { Keyboard } from './Keyboard'
 import { Lampboard } from './Lampboard'
+import { PartsBoxes } from './PartsBoxes'
 import { Plugboard } from './Plugboard'
 import { materials } from './materials'
 import { RotorHousing } from './RotorHousing'
 import { VIEWS } from './views'
 
-/** Keeps the camera still while the hands are on the machine: a key held down or a thumbwheel. */
+/** Keeps the camera still while the hands are on the machine: a key held down, a rotor or a cable. */
 function OrbitLock() {
   const controls = useThree((state) => state.controls) as { enabled: boolean; enableZoom: boolean } | null
   useEffect(() => {
@@ -45,8 +46,8 @@ function Studio() {
       />
       {/* Procedural environment: soft reflections on the nickel without downloading an HDRI. */}
       <Environment resolution={256}>
-        <Lightformer form="rect" intensity={2} position={[0, 10, 6]} scale={[12, 4, 1]} />
-        <Lightformer form="rect" intensity={1} position={[-10, 4, -4]} rotation-y={Math.PI / 2} scale={[10, 3, 1]} />
+        <Lightformer form="rect" intensity={1.2} position={[0, 10, 6]} scale={[12, 4, 1]} />
+        <Lightformer form="rect" intensity={0.6} position={[-10, 4, -4]} rotation-y={Math.PI / 2} scale={[10, 3, 1]} />
         <Lightformer form="circle" intensity={0.6} position={[8, 6, -8]} scale={4} />
       </Environment>
       <mesh material={materials.table} rotation-x={-Math.PI / 2} receiveShadow>
@@ -67,6 +68,7 @@ export function EnigmaScene() {
         <Lampboard />
         <RotorHousing />
         <Plugboard />
+        <PartsBoxes />
       </group>
       <OrbitControls
         makeDefault
@@ -81,7 +83,8 @@ export function EnigmaScene() {
       <OrbitLock />
       <CameraRig />
       <EffectComposer>
-        <Bloom mipmapBlur luminanceThreshold={1} intensity={1.1} radius={0.6} />
+        {/* Above metal highlights, so only the lit lamps (emissive, not tone mapped) glow. */}
+        <Bloom mipmapBlur luminanceThreshold={2.5} intensity={1.1} radius={0.6} />
       </EffectComposer>
     </Canvas>
   )

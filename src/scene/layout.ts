@@ -25,7 +25,7 @@ export const PLUG_FRONT_Z = PLUGBOARD.z + PLUGBOARD.socketDepth + PLUGBOARD.plug
 
 export const FLAP = { openAngle: 1.62 }
 
-export const ROTOR_HOUSING = { width: 15, zFront: -7.4, zBack: -14, height: 1, wall: 0.2, lidThickness: 0.15, windowPitch: 3.6 }
+export const ROTOR_HOUSING = { width: 15, zFront: -7.4, zBack: -14, height: 1, wall: 0.2, lidThickness: 0.15, windowPitch: 3.6, lidOpenAngle: -1.45 }
 
 /**
  * A rotor turns on an axle running left to right (x), below the top plate as in the real machine:
@@ -42,6 +42,19 @@ export const ROTOR = {
   wheelWidth: 0.45,
   wheelOffset: 1.35,
   teeth: 26,
+}
+
+/** Thin discs either side of the rotors: reflector (Umkehrwalze) left, entry wheel (Eintrittswalze) right. */
+export const END_WHEEL = { radius: 2.7, width: 0.8, gap: 2.75 }
+
+export const ROTOR_HOUSING_CENTER_Z = (ROTOR_HOUSING.zFront + ROTOR_HOUSING.zBack) / 2
+
+/** Wooden boxes on the table, right of the machine, holding the rotors and reflectors not in use. */
+export const ROTOR_BOX = { x: 27, z: -6, pitch: 3.4, axleY: ROTOR.wheelRadius + 0.6, depth: 9, wallHeight: 2.2 }
+export const REFLECTOR_BOX = { x: 25, z: 6, pitch: 2.4, axleY: END_WHEEL.radius + 0.5, depth: 7, wallHeight: 1.8 }
+
+export function boxSlotX(box: { x: number; pitch: number }, index: number, count: number): number {
+  return box.x + (index - (count - 1) / 2) * box.pitch
 }
 
 export const ROTOR_STEP_ANGLE = (Math.PI * 2) / 26

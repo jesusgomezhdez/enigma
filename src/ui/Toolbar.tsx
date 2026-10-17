@@ -1,16 +1,27 @@
+import { formatRingLabel, MODELS } from '../engine'
 import { CABLES_ISSUED, useEnigma, type ViewId } from '../state/enigmaStore'
 
 const VIEW_LABELS: Record<ViewId, string> = {
   machine: 'Máquina',
   rotors: 'Rotores',
+  interior: 'Interior',
   plugboard: 'Clavijas',
 }
 
-/** Camera shortcuts and the cable box. */
+/** Camera shortcuts and a summary of how the machine is set up, in key-sheet terms. */
 export function Toolbar() {
   const view = useEnigma((s) => s.view)
   const setView = useEnigma((s) => s.setView)
-  const plugboard = useEnigma((s) => s.machine.plugboard)
+  const model = useEnigma((s) => s.model)
+  const slots = useEnigma((s) => s.slots)
+  const rotors = useEnigma((s) => s.rotors)
+  const reflector = useEnigma((s) => s.reflector)
+  const plugboard = useEnigma((s) => s.plugboard)
+
+  const ringStyle = MODELS[model].ringLabels
+  const isComplete = reflector !== null && slots.every((slot) => slot !== null)
+  const order = slots.map((id) => id ?? '—').join(' ')
+  const rings = slots.map((id) => (id ? formatRingLabel(rotors[id].ring, ringStyle) : '—')).join(' ')
 
   return (
     <nav className="toolbar" aria-label="Vistas">
@@ -21,10 +32,23 @@ export function Toolbar() {
           </button>
         ))}
       </div>
-      <p className="cables" title={plugboard.join(' ') || 'Sin cables'}>
-        Cables {plugboard.length}/{CABLES_ISSUED}
-        {plugboard.length > 0 && <span>{plugboard.join(' ')}</span>}
-      </p>
+      <dl className="setup">
+        <dt>UKW</dt>
+        <dd>{reflector?.replace('-thin', ' fina') ?? '—'}</dd>
+        <dt>Walzenlage</dt>
+        <dd>{order}</dd>
+        <dt>Ringstellung</dt>
+        <dd>{rings}</dd>
+        <dt>
+          Stecker {plugboard.length}/{CABLES_ISSUED}
+        </dt>
+        <dd>{plugboard.join(' ') || '—'}</dd>
+      </dl>
+      {!isComplete && (
+        <p className="warning" role="status">
+          Falta {reflector === null ? 'el reflector' : 'un rotor'}: el circuito está abierto.
+        </p>
+      )}
     </nav>
   )
 }
