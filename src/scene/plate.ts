@@ -43,3 +43,27 @@ export function plateWithHoles(
   geometry.rotateX(-Math.PI / 2)
   return geometry
 }
+
+/**
+ * Serrated thumbwheel: a gear profile extruded along x, centred on the origin.
+ * Flat-topped teeth so the thumb gets a grip, one per rotor step.
+ */
+export function thumbwheelGeometry(radius: number, width: number, teeth: number, toothDepth = 0.18): ExtrudeGeometry {
+  const shape = new Shape()
+  const pitch = (Math.PI * 2) / teeth
+  const inner = radius - toothDepth
+  const point = (r: number, angle: number) => [r * Math.cos(angle), r * Math.sin(angle)] as const
+  shape.moveTo(...point(radius, 0))
+  for (let i = 0; i < teeth; i++) {
+    const a = i * pitch
+    shape.lineTo(...point(radius, a + pitch * 0.45))
+    shape.lineTo(...point(inner, a + pitch * 0.55))
+    shape.lineTo(...point(inner, a + pitch * 0.95))
+    shape.lineTo(...point(radius, a + pitch))
+  }
+
+  const geometry = new ExtrudeGeometry(shape, { depth: width, bevelEnabled: false })
+  geometry.translate(0, 0, -width / 2)
+  geometry.rotateY(Math.PI / 2)
+  return geometry
+}

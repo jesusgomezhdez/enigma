@@ -8,16 +8,18 @@ import { Keyboard } from './Keyboard'
 import { Lampboard } from './Lampboard'
 import { PLATE_Y } from './layout'
 import { materials } from './materials'
-import { RotorWindows } from './RotorWindows'
+import { RotorHousing } from './RotorHousing'
 
-/** Stops the camera from orbiting while a key is held down with the pointer. */
+/** Keeps the camera still while the hands are on the machine: a key held down or a thumbwheel. */
 function OrbitLock() {
-  const controls = useThree((state) => state.controls) as { enabled: boolean } | null
+  const controls = useThree((state) => state.controls) as { enabled: boolean; enableZoom: boolean } | null
   useEffect(() => {
     if (!controls) return
     // Subscribing outside React disables the controls in the same tick as the press.
     return useEnigma.subscribe((state) => {
-      controls.enabled = state.pressedBy !== 'pointer'
+      controls.enabled = state.pressedBy !== 'pointer' && state.grabbedRotor === null
+      // The mouse wheel turns a thumbwheel instead of zooming while over it.
+      controls.enableZoom = state.hoveredRotor === null
     })
   }, [controls])
   return null
@@ -61,7 +63,7 @@ export function EnigmaScene() {
         <Case />
         <Keyboard />
         <Lampboard />
-        <RotorWindows />
+        <RotorHousing />
       </group>
       <OrbitControls
         makeDefault
@@ -69,7 +71,8 @@ export function EnigmaScene() {
         enablePan={false}
         minDistance={25}
         maxDistance={110}
-        maxPolarAngle={Math.PI / 2.15}
+        minPolarAngle={0.1}
+        maxPolarAngle={1.05}
         enableDamping
       />
       <OrbitLock />

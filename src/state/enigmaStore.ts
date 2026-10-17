@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { createMachine, pressKey, type Letter, type MachineState, type TraceStep } from '../engine'
+import { createMachine, mod, pressKey, type Letter, type MachineState, type TraceStep } from '../engine'
 
 export type PressSource = 'pointer' | 'keyboard'
 
@@ -22,11 +22,18 @@ interface EnigmaStore {
   litLamp: Letter | null
   trace: TraceStep[]
   tape: { input: string; output: string }
+  /** Rotor slot whose thumbwheel is being dragged / hovered, so the camera keeps still. */
+  grabbedRotor: number | null
+  hoveredRotor: number | null
 
   pressKey: (key: Letter, source: PressSource) => void
   releaseKey: (source: PressSource, key?: Letter) => void
   releaseAll: () => void
   clearTape: () => void
+  /** Rolls a rotor by its thumbwheel. Impossible while a key is down: the stepping pawls are engaged. */
+  turnRotor: (slot: number, steps: number) => void
+  setGrabbedRotor: (slot: number | null) => void
+  setHoveredRotor: (slot: number | null) => void
 }
 
 export const useEnigma = create<EnigmaStore>()((set, get) => ({
@@ -36,6 +43,8 @@ export const useEnigma = create<EnigmaStore>()((set, get) => ({
   litLamp: null,
   trace: [],
   tape: { input: '', output: '' },
+  grabbedRotor: null,
+  hoveredRotor: null,
 
   pressKey: (key, source) => {
     const { pressedKey, machine, tape } = get()
@@ -60,4 +69,14 @@ export const useEnigma = create<EnigmaStore>()((set, get) => ({
   releaseAll: () => set({ pressedKey: null, pressedBy: null, litLamp: null }),
 
   clearTape: () => set({ tape: { input: '', output: '' } }),
+
+  turnRotor: (slot, steps) => {
+    const { machine, pressedKey } = get()
+    if (pressedKey !== null || steps === 0) return
+    const rotors = machine.rotors.map((rotor, i) => (i === slot ? { ...rotor, position: mod(rotor.position + steps) } : rotor))
+    set({ machine: { ...machine, rotors } })
+  },
+
+  setGrabbedRotor: (slot) => set({ grabbedRotor: slot }),
+  setHoveredRotor: (slot) => set({ hoveredRotor: slot }),
 }))
