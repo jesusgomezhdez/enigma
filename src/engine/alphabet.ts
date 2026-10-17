@@ -35,3 +35,8 @@ export function invert(permutation: readonly number[]): number[] {
   })
   return inverse
 }
+
+/** What the window shows: "01"–"26" on the Enigma I, "A"–"Z" on naval machines. */
+export function formatRingLabel(index: number, style: 'numbers' | 'letters'): string {
+  return style === 'numbers' ? String(mod(index) + 1).padStart(2, '0') : toLetter(index)
+}
